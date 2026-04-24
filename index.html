@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/roy-p/Downloads/index_9.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_10.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -497,7 +497,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_9.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_10.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">✓ Gratis &amp; anoniem</span>
 </nav>
 
@@ -513,19 +513,19 @@
 <section class="hero">
   <div class="hero-pill">Gratis · Geen account · Geen gedoe · Gewoon checken</div>
   <h1>Teken nooit meer een huurcontract <em>zonder het te checken</em></h1>
-  <p class="hero-sub">73% van alle huurcontracten bevat een illegale of oneerlijke clausule. Plak je contract hieronder en ontdek in 30 seconden wat jouw verhuurder liever verborgen houdt.</p>
+  <p class="hero-sub">Veel huurcontracten bevatten clausules die niet kloppen met de wet. Plak je contract hieronder en ontdek in 30 seconden wat jouw verhuurder liever verborgen houdt.</p>
   <div class="stats-row">
-    <div class="stat">
-      <div class="stat-num">73%</div>
-      <div class="stat-label">van huurcontracten bevat een oneerlijke clausule</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">€420</div>
-      <div class="stat-label">gemiddelde teveel betaald per jaar door illegale bedingen</div>
-    </div>
     <div class="stat">
       <div class="stat-num">30s</div>
       <div class="stat-label">en je weet waar je aan toe bent</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">gratis, geen account, geen registratie</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">beschikbaar, direct resultaat</div>
     </div>
   </div>
 </section>
@@ -538,11 +538,11 @@
     <p style="font-size:12px;color:var(--grijs);margin-top:8px;">— Oprichter van HuurControle.nl</p>
   </div>
 
-  <!-- GEBRUIKSTELLER -->
+  <!-- TAGLINE -->
   <div style="text-align:center;margin-bottom:1.5rem;">
     <span style="display:inline-flex;align-items:center;gap:8px;background:var(--groen-licht);border:1px solid #b8ddc8;border-radius:20px;padding:6px 16px;font-size:13px;color:var(--groen);font-weight:500;">
       <span style="width:8px;height:8px;background:var(--groen);border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span>
-      <span id="gebruiksTeller">Al <strong>847</strong> contracten geanalyseerd</span>
+      Gratis · Anoniem · Gebaseerd op Nederlands huurrecht
     </span>
   </div>
 
@@ -755,7 +755,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_9.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_9.html#">Contact</a></p>
+  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_10.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_10.html#">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020</p>
 </footer>
 
@@ -766,12 +766,6 @@ const charCount = document.getElementById('charcount');
 contractArea.addEventListener('input', () => {
   charCount.textContent = contractArea.value.length.toLocaleString('nl');
 });
-
-// Initialiseer gebruiksteller
-try {
-  const opgeslagen = parseInt(localStorage.getItem('huurcheck_teller') || '847');
-  document.getElementById('gebruiksTeller').innerHTML = `Al <strong>${opgeslagen.toLocaleString('nl')}</strong> contracten geanalyseerd`;
-} catch(e) {}
 
 // Tab wisselen
 function wisselTab(tab) {
@@ -1026,14 +1020,6 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
       document.getElementById('foutBox').textContent = '⚠ Je contract was erg lang. Alleen de eerste 12.000 tekens zijn geanalyseerd. Plak de rest apart voor een volledige analyse.';
       document.getElementById('foutBox').classList.add('active');
     }
-
-    // Teller ophogen
-    try {
-      const huidig = parseInt(localStorage.getItem('huurcheck_teller') || '847');
-      const nieuw = huidig + 1;
-      localStorage.setItem('huurcheck_teller', nieuw);
-      document.getElementById('gebruiksTeller').innerHTML = `Al <strong>${nieuw.toLocaleString('nl')}</strong> contracten geanalyseerd`;
-    } catch(e) {}
 
     toonResultaten(resultaat);
 
