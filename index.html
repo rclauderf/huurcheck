@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/roy-p/Downloads/index_4.html -->
+<!-- saved from url=(0045)file:///C:/Users/roy-p/Downloads/index_5.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -492,7 +492,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_4.html#" class="logo">Huur<span>Check</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_5.html#" class="logo">Huur<span>Check</span></a>
   <span class="nav-badge">✓ Gratis &amp; anoniem</span>
 </nav>
 
@@ -588,8 +588,9 @@ Bijvoorbeeld:
   <!-- LAADSTATUS -->
   <div class="loading-state" id="loadingState">
     <div class="spinner"></div>
-    <div class="loading-text">Contract wordt geanalyseerd...</div>
+    <div class="loading-text" id="loadingText">Contract wordt geanalyseerd...</div>
     <div class="loading-steps" id="loadingSteps">Tekst verwerken · Clausules identificeren · Toetsen aan huurrecht</div>
+    <div style="margin-top:1.2rem;font-size:12px;color:var(--grijs);">Dit duurt meestal 10–20 seconden</div>
   </div>
 
   <!-- RESULTATEN -->
@@ -602,6 +603,13 @@ Bijvoorbeeld:
     <div id="bevindingenContainer"></div>
     <div class="disclaimer">
       ⚖️ <strong>Let op:</strong> Deze analyse is informatief en gebaseerd op algemeen Nederlands huurrecht. Het is geen juridisch advies. Bij twijfel of conflict, raadpleeg een huurrechtadvocaat of de Huurcommissie.
+    </div>
+    <div style="margin-top:1rem;padding:1.2rem;background:var(--grijs-licht);border-radius:10px;text-align:center;">
+      <div style="font-size:14px;font-weight:500;margin-bottom:10px;">Ken je iemand met een huurcontract? Deel HuurCheck 👇</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="deelWhatsApp()" style="background:#25D366;color:white;border:none;padding:8px 16px;border-radius:8px;font-family:&#39;DM Sans&#39;,sans-serif;font-size:13px;font-weight:500;cursor:pointer;">📱 WhatsApp</button>
+        <button onclick="deelKopieer()" style="background:var(--donker);color:white;border:none;padding:8px 16px;border-radius:8px;font-family:&#39;DM Sans&#39;,sans-serif;font-size:13px;font-weight:500;cursor:pointer;" id="kopieerBtn">🔗 Kopieer link</button>
+      </div>
     </div>
   </div>
 
@@ -654,7 +662,7 @@ Bijvoorbeeld:
       Is HuurCheck echt gratis?
       <span class="faq-chevron">▼</span>
     </div>
-    <div class="faq-antwoord">Ja, HuurCheck is volledig gratis te gebruiken. Je hebt alleen een eigen Anthropic API-sleutel nodig, die gratis op te halen is via console.anthropic.com. De kosten per analyse zijn verwaarloosbaar (typisch minder dan €0,01).</div>
+    <div class="faq-antwoord">Ja, HuurCheck is volledig gratis te gebruiken. Je hoeft niets te installeren, geen account aan te maken en niets te betalen. Gewoon je contract plakken of uploaden en analyseren.</div>
   </div>
 
   <div class="faq-item">
@@ -662,7 +670,7 @@ Bijvoorbeeld:
       Wordt mijn contracttekst opgeslagen?
       <span class="faq-chevron">▼</span>
     </div>
-    <div class="faq-antwoord">Nee. Je tekst en API-sleutel worden uitsluitend vanuit je eigen browser direct naar de Anthropic API gestuurd. Er is geen server, geen database, en geen opslag. De gegevens verlaten je apparaat alleen voor de analyse zelf.</div>
+    <div class="faq-antwoord">Nee. Je contracttekst wordt alleen gebruikt voor de analyse en daarna direct weggegooid. Er is geen database, geen opslag en geen registratie. Wij bewaren niets.</div>
   </div>
 
   <div class="faq-item">
@@ -691,7 +699,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurCheck is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_4.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_4.html#">Contact</a></p>
+  <p>HuurCheck is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_5.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_5.html#">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020</p>
 </footer>
 
@@ -778,24 +786,50 @@ function toonFout(msg) {
 
 function verbergFout() {
   document.getElementById('foutBox').classList.remove('active');
+  document.getElementById('foutBox').style.background = '';
+  document.getElementById('foutBox').style.color = '';
+  document.getElementById('foutBox').style.borderColor = '';
 }
 
-// Adres van jouw Cloudflare Worker — je vult dit in na stap 3
+// Worker URL
 const WORKER_URL = 'https://huurcheck-proxy.roy-pouwels.workers.dev';
 
-// Dagelijkse limiet (max 3 analyses per dag per browser)
-function checkLimiet() {
-  const vandaag = new Date().toDateString();
-  const opgeslagen = JSON.parse(localStorage.getItem('huurcheck_gebruik') || '{}');
-  if (opgeslagen.datum !== vandaag) return { ok: true };
-  return { ok: (opgeslagen.aantal || 0) < 3 };
+// Laadanimatie stappen
+const laadStappen = [
+  'Tekst verwerken...',
+  'Clausules identificeren...',
+  'Toetsen aan Nederlands huurrecht...',
+  'Analyse afronden...'
+];
+let laadInterval = null;
+
+function startLaadAnimatie() {
+  let stap = 0;
+  const tekstEl = document.getElementById('loadingText');
+  const stepEl = document.getElementById('loadingSteps');
+  tekstEl.textContent = laadStappen[0];
+  stepEl.textContent = '';
+  laadInterval = setInterval(() => {
+    stap = Math.min(stap + 1, laadStappen.length - 1);
+    tekstEl.textContent = laadStappen[stap];
+  }, 4000);
 }
 
-function registreerGebruik() {
-  const vandaag = new Date().toDateString();
-  const opgeslagen = JSON.parse(localStorage.getItem('huurcheck_gebruik') || '{}');
-  const aantal = opgeslagen.datum === vandaag ? (opgeslagen.aantal || 0) + 1 : 1;
-  localStorage.setItem('huurcheck_gebruik', JSON.stringify({ datum: vandaag, aantal }));
+function stopLaadAnimatie() {
+  if (laadInterval) { clearInterval(laadInterval); laadInterval = null; }
+}
+
+// Deelfuncties
+function deelWhatsApp() {
+  window.open('https://wa.me/?text=' + encodeURIComponent('Heb jij je huurcontract al laten checken? Gratis AI-analyse op: https://rclauderf.github.io/huurcheck'), '_blank');
+}
+
+function deelKopieer() {
+  navigator.clipboard.writeText('https://rclauderf.github.io/huurcheck').then(() => {
+    const btn = document.getElementById('kopieerBtn');
+    btn.textContent = '✓ Gekopieerd!';
+    setTimeout(() => { btn.textContent = '🔗 Kopieer link'; }, 2000);
+  });
 }
 
 // Bepaal welke invoer actief is
@@ -810,7 +844,6 @@ function bouwMessages(systeemPrompt) {
   if (tab === 'tekst') {
     let tekst = document.getElementById('contract').value.trim();
     if (tekst.length < 50) return { geldig: false, fout: 'Plak meer tekst — minimaal 50 tekens voor een zinvolle analyse.' };
-    // Maximaal 12000 tekens — genoeg voor een volledig huurcontract
     const teGekort = tekst.length > 12000;
     if (teGekort) tekst = tekst.substring(0, 12000);
     return {
@@ -821,13 +854,10 @@ function bouwMessages(systeemPrompt) {
     };
   } else {
     if (!huidigBestand) return { geldig: false, fout: 'Upload eerst een bestand (foto of PDF van je contract).' };
-
-    // PDF wordt als document gestuurd, afbeeldingen als image
     const isPdf = huidigBestand.mediaType === 'application/pdf';
     const contentBlok = isPdf
       ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: huidigBestand.base64 } }
       : { type: 'image', source: { type: 'base64', media_type: huidigBestand.mediaType, data: huidigBestand.base64 } };
-
     return {
       geldig: true,
       fout: null,
@@ -845,11 +875,6 @@ function bouwMessages(systeemPrompt) {
 // Hoofdfunctie
 async function startAnalyse() {
   verbergFout();
-
-  if (!checkLimiet().ok) {
-    toonFout('Je hebt vandaag al 3 analyses gebruikt. Kom morgen terug voor nieuwe gratis analyses.');
-    return;
-  }
 
   const systeemPrompt = `Je bent een Nederlandse huurrecht-expert die huurcontracten analyseert voor huurders.
 Je taak: analyseer de aangeleverde contracttekst grondig op problemen, oneerlijkheden, en illegale bedingen.
@@ -889,6 +914,7 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
   document.getElementById('analyseBtn').disabled = true;
   document.getElementById('loadingState').classList.add('active');
   document.getElementById('resultaten').classList.remove('active');
+  startLaadAnimatie();
 
   try {
     const response = await fetch(WORKER_URL, {
@@ -898,21 +924,30 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
+        max_tokens: 4000,
         system: systeemPrompt,
         messages: invoer.messages
       })
     });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      if (response.status === 401) toonFout('API-sleutel is ongeldig. Controleer de instellingen.');
-      else if (response.status === 429) toonFout('Even wachten — probeer het over 30 seconden opnieuw.');
-      else toonFout(`Er ging iets mis (fout ${response.status}). Probeer opnieuw.`);
+    const data = await response.json();
+
+    // Limiet bereikt via Worker
+    if (data.limiet) {
+      toonFout('Je hebt vandaag al 3 analyses gebruikt. Kom morgen terug voor nieuwe gratis analyses. 👍');
+      document.getElementById('foutBox').style.background = '#f0f7f3';
+      document.getElementById('foutBox').style.color = '#1a6b3a';
+      document.getElementById('foutBox').style.borderColor = '#b8ddc8';
       return;
     }
 
-    const data = await response.json();
+    if (!response.ok && !data.content) {
+      if (response.status === 401) toonFout('API-sleutel is ongeldig. Controleer de instellingen.');
+      else if (response.status === 429) toonFout('Even wachten — probeer het over 30 seconden opnieuw.');
+      else toonFout(`Er ging iets mis. Probeer opnieuw.`);
+      return;
+    }
+
     const tekst = data.content?.map(b => b.text || '').join('') || '';
 
     let resultaat;
@@ -924,7 +959,6 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
       return;
     }
 
-    registreerGebruik();
     if (invoer.gekort) {
       document.getElementById('foutBox').textContent = '⚠ Je contract was erg lang. Alleen de eerste 12.000 tekens zijn geanalyseerd. Plak de rest apart voor een volledige analyse.';
       document.getElementById('foutBox').classList.add('active');
@@ -934,6 +968,7 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
   } catch (err) {
     toonFout('Netwerkfout. Controleer je verbinding en probeer opnieuw.');
   } finally {
+    stopLaadAnimatie();
     document.getElementById('analyseBtn').disabled = false;
     document.getElementById('loadingState').classList.remove('active');
   }
