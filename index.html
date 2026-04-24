@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_16.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_17.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -497,7 +497,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_16.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_17.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -788,7 +788,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_16.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_16.html#">Contact</a></p>
+  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_17.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_17.html#">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020</p>
 </footer>
 
@@ -1014,22 +1014,17 @@ Veelvoorkomende problemen:
 - Verplichte afname van diensten
 - Aansprakelijkheid voor normale slijtage
 
-Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
-{
-  "oordeel": "GOED" of "MATIG" of "SLECHT",
-  "samenvatting": "2-3 zinnen over de algehele staat van het contract",
-  "bevindingen": [
-    {
-      "type": "PROBLEEM" of "WAARSCHUWING" of "POSITIEF",
-      "titel": "Korte titel",
-      "preview": "Één zin samenvatting",
-      "uitleg": "Gedetailleerde uitleg",
-      "wettekst": "Bijv: Art. 7:255 BW — Huurprijswijziging",
-      "wetlink": "Volledige URL naar wetten.overheid.nl voor dit artikel, bijv: https://wetten.overheid.nl/BWBR0005290/2024-01-01#Boek7_Titeldeel4_Afdeling5_Artikel255 — laat leeg als je de exacte URL niet zeker weet",
-      "advies": "Concreet advies voor de huurder"
-    }
-  ]
-}`;
+BELANGRIJK: Geef je antwoord UITSLUITEND als geldig JSON. Geen uitleg, geen markdown, geen tekst buiten de JSON. Begin direct met { en eindig met }.
+
+Gebruik dit exacte formaat:
+{"oordeel":"GOED","samenvatting":"2-3 zinnen samenvatting","bevindingen":[{"type":"PROBLEEM","titel":"Korte titel","preview":"Één zin","uitleg":"Gedetailleerde uitleg","wettekst":"Art. 7:239 BW — Borgsom","wetlink":"https://wetten.overheid.nl/BWBR0005290/2024-01-01#Boek7_Titeldeel4_Afdeling5_Artikel239","advies":"Concreet advies"}]}
+
+Regels:
+- oordeel is altijd GOED, MATIG of SLECHT
+- type is altijd PROBLEEM, WAARSCHUWING of POSITIEF
+- wetlink is altijd een URL naar wetten.overheid.nl — gebruik https://wetten.overheid.nl/BWBR0005290/ voor BW Boek 7 artikelen
+- Als je de exacte URL niet weet, gebruik dan: https://wetten.overheid.nl/BWBR0005290/
+- Geen enkel veld mag ontbreken`;
 
   const invoer = bouwMessages(systeemPrompt);
   if (!invoer.geldig) { toonFout(invoer.fout); return; }
@@ -1046,7 +1041,6 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         system: systeemPrompt,
         messages: invoer.messages
