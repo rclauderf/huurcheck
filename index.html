@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/roy-p/Downloads/index_5.html -->
+<!-- saved from url=(0045)file:///C:/Users/roy-p/Downloads/index_6.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -492,7 +492,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_5.html#" class="logo">Huur<span>Check</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_6.html#" class="logo">Huur<span>Check</span></a>
   <span class="nav-badge">✓ Gratis &amp; anoniem</span>
 </nav>
 
@@ -699,7 +699,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurCheck is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_5.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_5.html#">Contact</a></p>
+  <p>HuurCheck is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_6.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_6.html#">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020</p>
 </footer>
 
@@ -902,7 +902,8 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
       "titel": "Korte titel",
       "preview": "Één zin samenvatting",
       "uitleg": "Gedetailleerde uitleg",
-      "wettekst": "Relevant wetsartikel (optioneel)",
+      "wettekst": "Bijv: Art. 7:255 BW — Huurprijswijziging",
+      "wetlink": "Volledige URL naar wetten.overheid.nl voor dit artikel, bijv: https://wetten.overheid.nl/BWBR0005290/2024-01-01#Boek7_Titeldeel4_Afdeling5_Artikel255 — laat leeg als je de exacte URL niet zeker weet",
       "advies": "Concreet advies voor de huurder"
     }
   ]
@@ -1013,7 +1014,7 @@ function toonResultaten(data) {
         <div class="bevinding-body">
           <p>${escHtml(b.uitleg)}</p>
           ${b.advies ? `<p><strong>Advies:</strong> ${escHtml(b.advies)}</p>` : ''}
-          ${b.wettekst ? `<div class="wettekst">${escHtml(b.wettekst)}</div>` : ''}
+          ${b.wettekst ? `<div class="wettekst">${b.wetlink ? `<a href="${escHtml(b.wetlink)}" target="_blank" rel="noopener" style="color:var(--rood);text-decoration:none;font-style:normal;">📖 ${escHtml(b.wettekst)} ↗</a>` : `📖 ${escHtml(b.wettekst)}`}</div>` : ''}
         </div>`;
       container.appendChild(el);
     });
@@ -1021,6 +1022,15 @@ function toonResultaten(data) {
 
   document.getElementById('resultaten').classList.add('active');
   document.getElementById('resultaten').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Zet wetsartikelverwijzingen om naar klikbare links naar wetten.overheid.nl
+function voegWetLinks(tekst) {
+  // Patronen: art. 7:264 BW, artikel 7:201 BW, art. 7:264, art. 6:248 BW etc.
+  return tekst.replace(/art(?:ikel)?\.?\s*(\d+):(\d+[a-z]?)\s*(BW|Burgerlijk Wetboek)?/gi, (match, boek, artikel, wetboek) => {
+    const url = `https://wetten.overheid.nl/zoeken?term=artikel+${boek}:${artikel}`;
+    return `<a href="${url}" target="_blank" rel="noopener" style="color:var(--rood);text-decoration:underline;font-style:normal;">${match} ↗</a>`;
+  });
 }
 
 function escHtml(str) {
