@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_10.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_11.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -497,7 +497,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_10.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_11.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">✓ Gratis &amp; anoniem</span>
 </nav>
 
@@ -726,7 +726,7 @@ Bijvoorbeeld:
       Wordt mijn contracttekst opgeslagen?
       <span class="faq-chevron">▼</span>
     </div>
-    <div class="faq-antwoord">Nee. Je contracttekst wordt alleen gebruikt voor de analyse en daarna direct weggegooid. Er is geen database, geen opslag en geen registratie. Wij bewaren niets.</div>
+    <div class="faq-antwoord">Wij slaan je contracttekst niet op — er is geen database en geen opslag aan onze kant. De filtering van gevoelige gegevens gebeurt volledig in jouw eigen browser, voordat er ook maar iets wordt verstuurd. BSN-nummers, IBAN-nummers, geboortedata, telefoonnummers, e-mailadressen en ID-nummers worden automatisch verwijderd. Namen en adressen blijven staan omdat die nodig zijn voor een goede analyse. Net als bij elk AI-hulpmiddel verwerkt een externe AI-dienst de gefilterde tekst om de analyse te maken.</div>
   </div>
 
   <div class="faq-item">
@@ -755,7 +755,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_10.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_10.html#">Contact</a></p>
+  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_11.html#">Privacy</a> &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_11.html#">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020</p>
 </footer>
 
@@ -888,6 +888,27 @@ function deelKopieer() {
   });
 }
 
+// Filter gevoelige gegevens uit tekst — gebeurt lokaal in de browser, vóór verzending
+function filterGevoeligeData(tekst) {
+  // BSN: 9 cijfers
+  tekst = tekst.replace(/\b\d{3}[\s.]?\d{3}[\s.]?\d{3}\b/g, '[BSN verwijderd]');
+  // IBAN
+  tekst = tekst.replace(/\bNL\d{2}[A-Z]{4}\d{10}\b/gi, '[IBAN verwijderd]');
+  // Geboortedatum (diverse formaten: 01-01-1990, 1 januari 1990, 01/01/1990)
+  tekst = tekst.replace(/\b\d{1,2}[-\/]\d{1,2}[-\/]\d{4}\b/g, '[geboortedatum verwijderd]');
+  tekst = tekst.replace(/\b\d{1,2}\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+\d{4}\b/gi, '[geboortedatum verwijderd]');
+  // Telefoonnummer (NL formaten)
+  tekst = tekst.replace(/\b((\+31|0031|0)[1-9]\d{8}|(\+31|0031|0)6\d{8})\b/g, '[telefoonnummer verwijderd]');
+  tekst = tekst.replace(/\b0\d[\s-]?\d{3}[\s-]?\d{4}\b/g, '[telefoonnummer verwijderd]');
+  // E-mailadres
+  tekst = tekst.replace(/\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g, '[e-mailadres verwijderd]');
+  // Paspoort/ID-nummer (combinatie letters en cijfers)
+  tekst = tekst.replace(/\b[A-Z]{1,2}\d{6,9}\b/g, '[ID-nummer verwijderd]');
+  // Handtekening aanduiding
+  tekst = tekst.replace(/handtekening[:\s]*[^\n]*/gi, 'handtekening: [verwijderd]');
+  return tekst;
+}
+
 // Bepaal welke invoer actief is
 function getActieveTab() {
   return document.getElementById('paneelUpload').style.display === 'none' ? 'tekst' : 'upload';
@@ -902,10 +923,13 @@ function bouwMessages(systeemPrompt) {
     if (tekst.length < 50) return { geldig: false, fout: 'Plak meer tekst — minimaal 50 tekens voor een zinvolle analyse.' };
     const teGekort = tekst.length > 12000;
     if (teGekort) tekst = tekst.substring(0, 12000);
+    tekst = filterGevoeligeData(tekst);
+    const gefilterd = tekst !== document.getElementById('contract').value.trim().substring(0, 12000);
     return {
       geldig: true,
       fout: null,
       gekort: teGekort,
+      gefilterd: gefilterd,
       messages: [{ role: 'user', content: `Analyseer dit huurcontract${teGekort ? ' (eerste deel)' : ''}:\n\n${tekst}` }]
     };
   } else {
@@ -1021,6 +1045,12 @@ Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
       document.getElementById('foutBox').classList.add('active');
     }
 
+    if (invoer.gefilterd) {
+      const melding = document.createElement('div');
+      melding.style.cssText = 'background:#f0f7f3;border:1px solid #b8ddc8;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a6b3a;margin-bottom:1rem;';
+      melding.textContent = '🔒 BSN- en/of rekeningnummers zijn automatisch verwijderd voordat je tekst werd verstuurd.';
+      document.getElementById('bevindingenContainer').prepend(melding);
+    }
     toonResultaten(resultaat);
 
   } catch (err) {
