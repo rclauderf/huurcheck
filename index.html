@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_20.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_21.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -497,7 +497,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_20.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_21.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -790,7 +790,7 @@ Bijvoorbeeld:
 </section>
 
 <footer>
-  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_20.html#">Privacy</a> &nbsp;·&nbsp; <a href="mailto:info@huurcontrole.nl">Contact</a></p>
+  <p>HuurControle.nl is een informele tool voor bewustmaking. Geen juridisch advies. &nbsp;·&nbsp; <a href="file:///C:/Users/roy-p/Downloads/index_21.html#">Privacy</a> &nbsp;·&nbsp; <a href="mailto:info@huurcontrole.nl">Contact</a></p>
   <p style="margin-top:8px;font-size:11px;">Huurcommissie: 0800-4887243 &nbsp;·&nbsp; Juridisch Loket: 0900-8020 &nbsp;·&nbsp; <a href="mailto:info@huurcontrole.nl" style="color:var(--grijs);">info@huurcontrole.nl</a></p>
 </footer>
 
@@ -934,23 +934,64 @@ function deelKopieer() {
 
 // Filter gevoelige gegevens uit tekst — gebeurt lokaal in de browser, vóór verzending
 function filterGevoeligeData(tekst) {
-  // BSN: 9 cijfers
-  tekst = tekst.replace(/\b\d{3}[\s.]?\d{3}[\s.]?\d{3}\b/g, '[BSN verwijderd]');
-  // IBAN
-  tekst = tekst.replace(/\bNL\d{2}[A-Z]{4}\d{10}\b/gi, '[IBAN verwijderd]');
-  // Geboortedatum (diverse formaten: 01-01-1990, 1 januari 1990, 01/01/1990)
-  tekst = tekst.replace(/\b\d{1,2}[-\/]\d{1,2}[-\/]\d{4}\b/g, '[geboortedatum verwijderd]');
-  tekst = tekst.replace(/\b\d{1,2}\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+\d{4}\b/gi, '[geboortedatum verwijderd]');
-  // Telefoonnummer (NL formaten)
-  tekst = tekst.replace(/\b((\+31|0031|0)[1-9]\d{8}|(\+31|0031|0)6\d{8})\b/g, '[telefoonnummer verwijderd]');
-  tekst = tekst.replace(/\b0\d[\s-]?\d{3}[\s-]?\d{4}\b/g, '[telefoonnummer verwijderd]');
+  const gefilterd = [];
+
+  // BSN: 9 cijfers op zichzelf
+  tekst = tekst.replace(/\b\d{9}\b/g, (match) => {
+    gefilterd.push('BSN-nummer');
+    return '[BSN verwijderd]';
+  });
+
+  // IBAN: alle landen (2 letters + 2 cijfers + tot 30 tekens)
+  tekst = tekst.replace(/\b[A-Z]{2}\d{2}[A-Z0-9]{4,30}\b/g, (match) => {
+    gefilterd.push('IBAN-nummer');
+    return '[IBAN verwijderd]';
+  });
+
+  // Geboortedatum (diverse formaten)
+  tekst = tekst.replace(/\b\d{1,2}[-\/]\d{1,2}[-\/]\d{4}\b/g, (match) => {
+    gefilterd.push('geboortedatum');
+    return '[geboortedatum verwijderd]';
+  });
+  tekst = tekst.replace(/\b\d{1,2}\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+\d{4}\b/gi, (match) => {
+    gefilterd.push('geboortedatum');
+    return '[geboortedatum verwijderd]';
+  });
+
+  // Telefoonnummer — alle Nederlandse formaten inclusief 10 cijfers
+  tekst = tekst.replace(/\b((\+31|0031)[\s-]?[1-9]\d{8}|0[1-9]\d{8}|06[\s-]?\d{8}|06[\s-]?\d{4}[\s-]?\d{4})\b/g, (match) => {
+    gefilterd.push('telefoonnummer');
+    return '[telefoonnummer verwijderd]';
+  });
+
   // E-mailadres
-  tekst = tekst.replace(/\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g, '[e-mailadres verwijderd]');
-  // Paspoort/ID-nummer (combinatie letters en cijfers)
-  tekst = tekst.replace(/\b[A-Z]{1,2}\d{6,9}\b/g, '[ID-nummer verwijderd]');
-  // Handtekening aanduiding
-  tekst = tekst.replace(/handtekening[:\s]*[^\n]*/gi, 'handtekening: [verwijderd]');
-  return tekst;
+  tekst = tekst.replace(/\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g, (match) => {
+    gefilterd.push('e-mailadres');
+    return '[e-mailadres verwijderd]';
+  });
+
+  // Paspoort/ID-nummer
+  tekst = tekst.replace(/\b[A-Z]{1,2}\d{6,9}\b/g, (match) => {
+    gefilterd.push('ID-nummer');
+    return '[ID-nummer verwijderd]';
+  });
+
+  // Handtekening
+  tekst = tekst.replace(/handtekening[:\s]*[^\n]*/gi, (match) => {
+    gefilterd.push('handtekening');
+    return 'handtekening: [verwijderd]';
+  });
+
+  // Lange alfanumerieke reeksen die op rekeningnummers lijken (min 10 tekens, mix letters/cijfers)
+  tekst = tekst.replace(/\b[A-Z]{2,4}\d{6,20}\b/g, (match) => {
+    gefilterd.push('rekeningnummer');
+    return '[rekeningnummer verwijderd]';
+  });
+
+  // Verwijder duplicaten uit gefilterd array
+  const uniek = [...new Set(gefilterd)];
+
+  return { tekst, gefilterd: uniek };
 }
 
 // Bepaal welke invoer actief is
@@ -967,13 +1008,15 @@ function bouwMessages(systeemPrompt) {
     if (tekst.length < 50) return { geldig: false, fout: 'Plak meer tekst — minimaal 50 tekens voor een zinvolle analyse.' };
     const teGekort = tekst.length > 12000;
     if (teGekort) tekst = tekst.substring(0, 12000);
-    tekst = filterGevoeligeData(tekst);
-    const gefilterd = tekst !== document.getElementById('contract').value.trim().substring(0, 12000);
+    const filterResultaat = filterGevoeligeData(tekst);
+    tekst = filterResultaat.tekst;
+    const gefilterdeLijst = filterResultaat.gefilterd;
     return {
       geldig: true,
       fout: null,
       gekort: teGekort,
-      gefilterd: gefilterd,
+      gefilterd: gefilterdeLijst.length > 0,
+      gefilterdeLijst,
       messages: [{ role: 'user', content: `Analyseer dit huurcontract${teGekort ? ' (eerste deel)' : ''}:\n\n${tekst}` }]
     };
   } else {
@@ -1084,10 +1127,11 @@ Regels:
     }
 
     if (invoer.gefilterd) {
-      const melding = document.createElement('div');
-      melding.style.cssText = 'background:#f0f7f3;border:1px solid #b8ddc8;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a6b3a;margin-bottom:1rem;';
-      melding.textContent = '🔒 BSN- en/of rekeningnummers zijn automatisch verwijderd voordat je tekst werd verstuurd.';
-      document.getElementById('bevindingenContainer').prepend(melding);
+      document.getElementById('foutBox').textContent = `🔒 Automatisch verwijderd voor verzending: ${invoer.gefilterdeLijst.join(', ')}.`;
+      document.getElementById('foutBox').style.background = '#f0f7f3';
+      document.getElementById('foutBox').style.color = '#1a6b3a';
+      document.getElementById('foutBox').style.borderColor = '#b8ddc8';
+      document.getElementById('foutBox').classList.add('active');
     }
     toonResultaten(resultaat);
 
