@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_43.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_44.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HuurControle.nl – Controleer je huurcontract gratis met AI</title>
 <meta name="description" content="Teken nooit meer een huurcontract zonder het te checken. Gratis AI-analyse op basis van Nederlands huurrecht. Geen account, geen gedoe.">
 <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;&gt;&lt;rect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;20&#39; fill=&#39;%23c0392b&#39;/&gt;&lt;text y=&#39;.9em&#39; font-size=&#39;65&#39; x=&#39;50%&#39; text-anchor=&#39;middle&#39; dominant-baseline=&#39;auto&#39; font-family=&#39;sans-serif&#39; fill=&#39;white&#39; font-weight=&#39;bold&#39;&gt;H&lt;/text&gt;&lt;/svg&gt;">
-<script type="module">
-import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.mjs';
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.mjs';
-window.pdfjsLib = pdfjsLib;
-window.pdfjsGeladen = true;
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link href="./index_files/css2" rel="stylesheet">
 
@@ -511,7 +505,7 @@ window.pdfjsGeladen = true;
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_43.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_44.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -824,73 +818,15 @@ function verwerkBestand(bestand) {
     return;
   }
   const reader = new FileReader();
-  reader.onload = async (e) => {
-    if (bestand.type === 'application/pdf') {
-      document.getElementById('bestandNaam').textContent = '⏳ PDF verwerken...';
-      document.getElementById('bestandPreview').style.display = 'flex';
-      try {
-        // Wacht tot PDF.js en worker geladen zijn (max 10 seconden)
-        if (!window.pdfjsGeladen) {
-          await new Promise((resolve, reject) => {
-            let pogingen = 0;
-            const check = setInterval(() => {
-              pogingen++;
-              if (window.pdfjsGeladen) { clearInterval(check); resolve(); }
-              if (pogingen > 100) { clearInterval(check); reject(new Error('PDF.js laadt niet — controleer je internetverbinding')); }
-            }, 100);
-          });
-        }
-        const pdfjsLib = window.pdfjsLib;
-        const pdf = await pdfjsLib.getDocument({ data: atob(e.target.result.split(',')[1]) }).promise;
-        const aantalPaginas = pdf.numPages;
-
-        // Alle pagina's samenvoegen tot één grote afbeelding
-        const alleCanvassen = [];
-        let totaleHoogte = 0;
-        let maxBreedte = 0;
-
-        for (let i = 1; i <= aantalPaginas; i++) {
-          document.getElementById('bestandNaam').textContent = `⏳ Pagina ${i} van ${aantalPaginas} verwerken...`;
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          const ctx = canvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport }).promise;
-          alleCanvassen.push(canvas);
-          totaleHoogte += canvas.height;
-          maxBreedte = Math.max(maxBreedte, canvas.width);
-        }
-
-        // Alles samenvoegen in één canvas
-        const combineerCanvas = document.createElement('canvas');
-        combineerCanvas.width = maxBreedte;
-        combineerCanvas.height = totaleHoogte;
-        const combineerCtx = combineerCanvas.getContext('2d');
-        combineerCtx.fillStyle = 'white';
-        combineerCtx.fillRect(0, 0, maxBreedte, totaleHoogte);
-
-        let yOffset = 0;
-        for (const canvas of alleCanvassen) {
-          combineerCtx.drawImage(canvas, 0, yOffset);
-          yOffset += canvas.height;
-        }
-
-        const imageData = combineerCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-        huidigBestand = { base64: imageData, mediaType: 'image/jpeg', naam: bestand.name, paginas: aantalPaginas };
-        document.getElementById('bestandNaam').textContent = `📄 ${bestand.name} (${aantalPaginas} pagina${aantalPaginas > 1 ? "'s" : ''})`;
-      } catch(err) {
-        console.error('PDF fout:', err);
-        document.getElementById('bestandNaam').textContent = '❌ PDF kon niet worden gelezen';
-        toonFout('PDF kon niet worden verwerkt: ' + err.message + '. Probeer een foto of JPG van je contract.');
-        return;
-      }
-    } else {
-      const base64 = e.target.result.split(',')[1];
-      huidigBestand = { base64, mediaType: bestand.type, naam: bestand.name };
-      document.getElementById('bestandNaam').textContent = '📄 ' + bestand.name;
-    }
+  reader.onload = (e) => {
+    const base64 = e.target.result.split(',')[1];
+    huidigBestand = {
+      base64,
+      mediaType: bestand.type,
+      naam: bestand.name,
+      isPdf: bestand.type === 'application/pdf'
+    };
+    document.getElementById('bestandNaam').textContent = '📄 ' + bestand.name;
     document.getElementById('bestandPreview').style.display = 'flex';
     document.getElementById('dropzone').style.borderColor = 'var(--groen)';
     document.getElementById('dropzone').style.background = 'var(--groen-licht)';
@@ -1067,17 +1003,29 @@ function bouwMessages(systeemPrompt) {
   } else {
     if (!huidigBestand) return { geldig: false, fout: 'Upload eerst een bestand (foto of PDF van je contract).' };
 
-    return {
-      geldig: true,
-      fout: null,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: huidigBestand.base64 } },
-          { type: 'text', text: `Dit is een scan van een huurcontract (${huidigBestand.paginas || 1} pagina's). Lees alle tekst zorgvuldig en analyseer het volledige contract.` }
-        ]
-      }]
-    };
+    if (huidigBestand.isPdf) {
+      // PDF — stuur als pdfBase64 naar Worker voor tekst extractie
+      return {
+        geldig: true,
+        fout: null,
+        isPdf: true,
+        pdfBase64: huidigBestand.base64,
+        messages: []
+      };
+    } else {
+      // Afbeelding — stuur direct als image
+      return {
+        geldig: true,
+        fout: null,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: huidigBestand.mediaType, data: huidigBestand.base64 } },
+            { type: 'text', text: 'Dit is een foto of scan van een huurcontract. Lees de tekst en analyseer het contract volledig.' }
+          ]
+        }]
+      };
+    }
   }
 }
 
@@ -1122,16 +1070,20 @@ Regels:
   startLaadAnimatie();
 
   try {
+    const requestBody = {
+      max_tokens: 4000,
+      system: systeemPrompt,
+      messages: invoer.messages
+    };
+
+    if (invoer.isPdf) {
+      requestBody.pdfBase64 = invoer.pdfBase64;
+    }
+
     const response = await fetch(WORKER_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        max_tokens: 4000,
-        system: systeemPrompt,
-        messages: invoer.messages
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
