@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_44.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_45.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -505,7 +505,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_44.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_45.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -877,23 +877,36 @@ const WORKER_URL = 'https://huurcheck-proxy.roy-pouwels.workers.dev';
 
 // Laadanimatie stappen
 const laadStappen = [
-  'Tekst verwerken...',
+  'Contract wordt verwerkt...',
   'Clausules identificeren...',
   'Toetsen aan Nederlands huurrecht...',
   'Analyse afronden...'
 ];
+
+const laadStappenAfbeelding = [
+  'Afbeelding wordt ingelezen...',
+  'Tekst herkennen uit document...',
+  'Clausules identificeren...',
+  'Toetsen aan Nederlands huurrecht...',
+  'Analyse afronden — nog even geduld...'
+];
 let laadInterval = null;
 
-function startLaadAnimatie() {
+function startLaadAnimatie(isAfbeelding) {
   let stap = 0;
+  const stappen = isAfbeelding ? laadStappenAfbeelding : laadStappen;
   const tekstEl = document.getElementById('loadingText');
   const stepEl = document.getElementById('loadingSteps');
-  tekstEl.textContent = laadStappen[0];
-  stepEl.textContent = '';
+  tekstEl.textContent = stappen[0];
+  if (isAfbeelding) {
+    stepEl.textContent = 'Afbeeldingen analyseren duurt 30-60 seconden — even geduld';
+  } else {
+    stepEl.textContent = '';
+  }
   laadInterval = setInterval(() => {
-    stap = Math.min(stap + 1, laadStappen.length - 1);
-    tekstEl.textContent = laadStappen[stap];
-  }, 4000);
+    stap = Math.min(stap + 1, stappen.length - 1);
+    tekstEl.textContent = stappen[stap];
+  }, isAfbeelding ? 8000 : 4000);
 }
 
 function stopLaadAnimatie() {
@@ -1064,10 +1077,12 @@ Regels:
   const invoer = bouwMessages(systeemPrompt);
   if (!invoer.geldig) { toonFout(invoer.fout); return; }
 
+  const isAfbeelding = getActieveTab() === 'upload';
+
   document.getElementById('analyseBtn').disabled = true;
   document.getElementById('loadingState').classList.add('active');
   document.getElementById('resultaten').classList.remove('active');
-  startLaadAnimatie();
+  startLaadAnimatie(isAfbeelding);
 
   try {
     const requestBody = {
