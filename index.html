@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_46.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_47.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -505,7 +505,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_46.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_47.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -588,20 +588,23 @@ Bijvoorbeeld:
       <!-- TAB: UPLOAD -->
       <div id="paneelUpload" style="display:none;">
         <div id="dropzone" onclick="document.getElementById(&#39;bestandInput&#39;).click()" style="border:2px dashed var(--border);border-radius:10px;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;">
-          <div style="font-size:2rem;margin-bottom:8px;">📄</div>
-          <div style="font-weight:500;font-size:15px;margin-bottom:4px;">Sleep je bestand hierheen</div>
-          <div style="font-size:13px;color:var(--grijs);">of klik om te bladeren · JPG, PNG, PDF · max 10 MB</div>
-          <input type="file" id="bestandInput" accept="image/jpeg,image/png,image/webp,application/pdf" style="display:none" onchange="bestandGekozen(this)">
+          <div style="font-size:2rem;margin-bottom:8px;">📸</div>
+          <div style="font-weight:500;font-size:15px;margin-bottom:4px;">Sleep je foto hierheen</div>
+          <div style="font-size:13px;color:var(--grijs);">of klik om te bladeren · JPG of PNG · max 10 MB</div>
+          <input type="file" id="bestandInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="bestandGekozen(this)">
         </div>
         <div id="bestandPreview" style="display:none;margin-top:1rem;padding:12px 14px;background:var(--grijs-licht);border-radius:8px;display:none;align-items:center;gap:10px;">
           <span id="bestandNaam" style="font-size:13px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
           <button onclick="verwijderBestand()" style="background:none;border:none;cursor:pointer;color:var(--grijs);font-size:18px;line-height:1;padding:0;">×</button>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--grijs);line-height:1.6;">
-          📸 Heb je een papieren contract? Maak gewoon een duidelijke foto met je telefoon en upload die. De AI leest de tekst automatisch.
+          📸 Maak een duidelijke foto van je papieren contract met je telefoon en upload die. De AI leest de tekst automatisch.
+        </div>
+        <div style="margin-top:8px;padding:10px 12px;background:var(--groen-licht);border:1px solid #b8ddc8;border-radius:8px;font-size:12px;color:var(--groen);line-height:1.6;">
+          💡 <strong>Digitale PDF?</strong> Kopieer de tekst uit je PDF en plak die in het tekstvak. Dat werkt sneller en nauwkeuriger.
         </div>
         <div style="margin-top:8px;padding:10px 12px;background:#fffbf0;border:1px solid #f0e0a0;border-radius:8px;font-size:12px;color:#7a6520;line-height:1.6;">
-          ⚠️ <strong>Let op:</strong> Bij het uploaden van een afbeelding of PDF worden gevoelige gegevens zoals BSN-nummers en geboortedata <em>niet</em> automatisch gefilterd. Zorg dat je geen afbeeldingen uploadt met BSN-nummers, geboortedata, IBAN-nummers of andere gevoelige persoonsgegevens. Fotografeer indien mogelijk alleen de relevante clausules.
+          ⚠️ <strong>Let op:</strong> Gevoelige gegevens zoals BSN-nummers worden bij foto uploads niet automatisch gefilterd. Fotografeer indien mogelijk alleen de relevante clausules.
         </div>
       </div>
 
@@ -811,9 +814,9 @@ function verwerkBestand(bestand) {
     toonFout('Bestand is te groot. Maximum is 10 MB.');
     return;
   }
-  const toegestaan = ['image/jpeg','image/png','image/webp','application/pdf'];
+  const toegestaan = ['image/jpeg','image/png','image/webp'];
   if (!toegestaan.includes(bestand.type)) {
-    toonFout('Alleen JPG, PNG, WEBP of PDF bestanden zijn toegestaan.');
+    toonFout('Alleen JPG of PNG foto\'s zijn toegestaan. Heb je een digitale PDF? Kopieer de tekst en plak die in het tekstvak.');
     return;
   }
   const reader = new FileReader();
