@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_40.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_41.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -531,7 +531,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_40.html#" class="logo">Huur<span>Controle</span></a>
+  <a href="file:///C:/Users/roy-p/Downloads/index_41.html#" class="logo">Huur<span>Controle</span></a>
   <span class="nav-badge">🔒 Maximale privacy gegarandeerd</span>
 </nav>
 
@@ -864,21 +864,41 @@ function verwerkBestand(bestand) {
         const pdf = await pdfjsLib.getDocument({ data: atob(e.target.result.split(',')[1]) }).promise;
         const aantalPaginas = pdf.numPages;
 
-        // Alle pagina's omzetten naar afbeeldingen
-        const afbeeldingen = [];
+        // Alle pagina's samenvoegen tot één grote afbeelding
+        const alleCanvassen = [];
+        let totaleHoogte = 0;
+        let maxBreedte = 0;
+
         for (let i = 1; i <= aantalPaginas; i++) {
           document.getElementById('bestandNaam').textContent = `⏳ Pagina ${i} van ${aantalPaginas} verwerken...`;
-          const page = await pdf.getPage(i);
+          const page = await pdfjsLib.getPage(i);
           const viewport = page.getViewport({ scale: 1.5 });
           const canvas = document.createElement('canvas');
           canvas.width = viewport.width;
           canvas.height = viewport.height;
           const ctx = canvas.getContext('2d');
           await page.render({ canvasContext: ctx, viewport }).promise;
-          afbeeldingen.push(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+          alleCanvassen.push(canvas);
+          totaleHoogte += canvas.height;
+          maxBreedte = Math.max(maxBreedte, canvas.width);
         }
 
-        huidigBestand = { afbeeldingen, mediaType: 'image/jpeg', naam: bestand.name, paginas: aantalPaginas };
+        // Alles samenvoegen in één canvas
+        const combineerCanvas = document.createElement('canvas');
+        combineerCanvas.width = maxBreedte;
+        combineerCanvas.height = totaleHoogte;
+        const combineerCtx = combineerCanvas.getContext('2d');
+        combineerCtx.fillStyle = 'white';
+        combineerCtx.fillRect(0, 0, maxBreedte, totaleHoogte);
+
+        let yOffset = 0;
+        for (const canvas of alleCanvassen) {
+          combineerCtx.drawImage(canvas, 0, yOffset);
+          yOffset += canvas.height;
+        }
+
+        const imageData = combineerCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+        huidigBestand = { base64: imageData, mediaType: 'image/jpeg', naam: bestand.name, paginas: aantalPaginas };
         document.getElementById('bestandNaam').textContent = `📄 ${bestand.name} (${aantalPaginas} pagina${aantalPaginas > 1 ? "'s" : ''})`;
       } catch(err) {
         console.error('PDF fout:', err);
@@ -1067,24 +1087,16 @@ function bouwMessages(systeemPrompt) {
   } else {
     if (!huidigBestand) return { geldig: false, fout: 'Upload eerst een bestand (foto of PDF van je contract).' };
 
-    // Meerdere pagina's (PDF) of enkele afbeelding
-    const contentBlokken = [];
-    if (huidigBestand.afbeeldingen) {
-      // PDF met meerdere pagina's — max 10 pagina's meesturen
-      const paginas = huidigBestand.afbeeldingen.slice(0, 10);
-      paginas.forEach((img, i) => {
-        contentBlokken.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: img } });
-      });
-      contentBlokken.push({ type: 'text', text: `Dit zijn ${paginas.length} pagina's van een huurcontract. Lees alle pagina's en analyseer het contract volledig.` });
-    } else {
-      contentBlokken.push({ type: 'image', source: { type: 'base64', media_type: huidigBestand.mediaType, data: huidigBestand.base64 } });
-      contentBlokken.push({ type: 'text', text: 'Dit is een foto of scan van een huurcontract. Lees de tekst en analyseer het contract volledig.' });
-    }
-
     return {
       geldig: true,
       fout: null,
-      messages: [{ role: 'user', content: contentBlokken }]
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: huidigBestand.base64 } },
+          { type: 'text', text: `Dit is een scan van een huurcontract (${huidigBestand.paginas || 1} pagina's). Lees alle tekst zorgvuldig en analyseer het volledige contract.` }
+        ]
+      }]
     };
   }
 }
