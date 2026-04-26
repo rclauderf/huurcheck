@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_52.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_53.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -505,7 +505,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_52.html#" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+  <a href="file:///C:/Users/roy-p/Downloads/index_53.html#" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
     <svg width="44" height="48" viewBox="0 0 72 92" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M36,2 L70,28 L70,54 Q70,78 36,88 Q2,78 2,54 L2,28 Z" fill="none" stroke="#c0392b" stroke-width="4"></path>
       <path d="M36,10 L62,30" stroke="#c0392b" stroke-width="2" opacity="0.35"></path>
@@ -1092,7 +1092,9 @@ Regels:
 - Kies ALTIJD het wetsartikel dat direct relevant is voor de specifieke bevinding
 - wetlink is altijd een URL naar wetten.overheid.nl
 - Als je de exacte URL niet weet, gebruik dan: https://wetten.overheid.nl/BWBR0005290/
-- Geen enkel veld mag ontbreken`;
+- Geen enkel veld mag ontbreken
+- Adviseer NOOIT om betalingen stop te zetten zonder uitspraak van de Huurcommissie of rechter — verwijs altijd naar de Huurcommissie (0800-4887243) of het Juridisch Loket (0900-8020) voor concrete vervolgstappen
+- Wees genuanceerd — huurrecht is complex en situatieafhankelijk, vermijd absolute uitspraken`;
 
   const invoer = bouwMessages(systeemPrompt);
   if (!invoer.geldig) { toonFout(invoer.fout); return; }
@@ -1276,6 +1278,8 @@ BELANGRIJK: Kies ALTIJD het wetsartikel dat direct relevant is voor de gestelde 
 - Vraag over koop breekt geen huur → Art. 7:226 BW
 - Vraag over borgsom → Art. 7:239 BW
 - Vraag over servicekosten → Besluit servicekosten
+
+Adviseer NOOIT om betalingen stop te zetten zonder uitspraak van de Huurcommissie of rechter. Verwijs altijd naar de Huurcommissie (0800-4887243) of het Juridisch Loket (0900-8020) voor concrete vervolgstappen. Wees genuanceerd — huurrecht is situatieafhankelijk, vermijd absolute uitspraken.
 
 Als je de exacte URL niet weet gebruik dan: https://wetten.overheid.nl/BWBR0005290/`,
         messages: [{ role: 'user', content: vraag }]
