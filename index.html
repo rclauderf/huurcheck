@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_58.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_60.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -507,7 +507,7 @@
 <body>
 
 <nav>
-  <a href="file:///C:/Users/roy-p/Downloads/index_58.html#" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+  <a href="file:///C:/Users/roy-p/Downloads/index_60.html#" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
     <svg width="44" height="48" viewBox="0 0 72 92" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M36,2 L70,28 L70,54 Q70,78 36,88 Q2,78 2,54 L2,28 Z" fill="none" stroke="#c0392b" stroke-width="4"></path>
       <path d="M36,10 L62,30" stroke="#c0392b" stroke-width="2" opacity="0.35"></path>
@@ -995,15 +995,9 @@ function filterGevoeligeData(tekst) {
     return '[IBAN verwijderd]';
   });
 
-  // Geboortedatum — alleen data die een geboortedatum kunnen zijn (voor 2006)
-  tekst = tekst.replace(/\b(0?[1-9]|[12]\d|3[01])[-\/](0?[1-9]|1[0-2])[-\/](19\d{2}|200[0-5])\b/g, (match) => {
-    gefilterd.push('geboortedatum');
-    return '[geboortedatum verwijderd]';
-  });
-  tekst = tekst.replace(/\b\d{1,2}\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(19\d{2}|200[0-5])\b/gi, (match) => {
-    gefilterd.push('geboortedatum');
-    return '[geboortedatum verwijderd]';
-  });
+  // Geboortedatum — alleen jaren voor 2006 (niemand jonger dan 18 huurt)
+  tekst = tekst.replace(/\b(0?[1-9]|[12]\d|3[01])[-\/](0?[1-9]|1[0-2])[-\/](19\d{2}|200[0-5])\b/g, () => { gefilterd.push('geboortedatum'); return '[geboortedatum verwijderd]'; });
+  tekst = tekst.replace(/\b\d{1,2}\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(19\d{2}|200[0-5])\b/gi, () => { gefilterd.push('geboortedatum'); return '[geboortedatum verwijderd]'; });
 
   // Telefoonnummer — alle Nederlandse formaten inclusief 10 cijfers
   tekst = tekst.replace(/\b((\+31|0031)[\s-]?[1-9]\d{8}|0[1-9]\d{8}|06[\s-]?\d{8}|06[\s-]?\d{4}[\s-]?\d{4})\b/g, (match) => {
@@ -1135,7 +1129,7 @@ Regels:
   const invoer = bouwMessages(systeemPrompt);
   if (!invoer.geldig) { toonFout(invoer.fout); return; }
 
-  const isAfbeelding = getActieveTab() === 'upload';
+  const isAfbeelding = huidigBestand !== null;
 
   document.getElementById('analyseBtn').disabled = true;
   document.getElementById('loadingState').classList.add('active');
@@ -1200,6 +1194,26 @@ Regels:
       document.getElementById('foutBox').style.borderColor = '#b8ddc8';
       document.getElementById('foutBox').classList.add('active');
     }
+    // Post-processing: corrigeer bekende borgsom fout
+    // Modellen zeggen soms "maximaal 1 maand" terwijl het 3 maanden is
+    if (resultaat.bevindingen) {
+      resultaat.bevindingen = resultaat.bevindingen.filter(b => {
+        // Verwijder borgsom bevindingen die incorrect zijn (borg ≤ 3 maanden is legaal)
+        if (b.type === 'PROBLEEM' && b.wettekst && b.wettekst.includes('7:239')) {
+          // Check of de uitleg een borg van 1 of 2 maanden als maximum noemt terwijl het 3 is
+          if (b.uitleg && (b.uitleg.includes('één maand') || b.uitleg.includes('1 maand') || b.uitleg.includes('two months') || b.uitleg.includes('maximaal één'))) {
+            // Vervang door positieve beoordeling
+            b.type = 'POSITIEF';
+            b.titel = 'Borgsom binnen wettelijke grens';
+            b.preview = 'De borgsom is maximaal 3 maanden kale huur';
+            b.uitleg = 'De wettelijke maximale borgsom is 3 maanden kale huur (Art. 7:239 BW). Een borg van 1, 2 of 3 maanden is altijd legaal.';
+            b.advies = 'Geen actie nodig.';
+          }
+        }
+        return true;
+      });
+    }
+
     toonResultaten(resultaat);
 
   } catch (err) {
