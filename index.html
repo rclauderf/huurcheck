@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_68.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_69.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -556,7 +556,7 @@
           HuurControle.nl gebruikt een open source AI-model dat draait in een <strong>Trusted Execution Environment (TEE)</strong> — een beveiligde chip waar zelfs de serverbeheerder niet bij kan. Bij ChatGPT of Grok worden je gegevens verwerkt op Amerikaanse servers. Bij HuurControle.nl is dit technisch onmogelijk gemaakt.<br><br>
           <strong>Alles is publiek controleerbaar:</strong><br>
           📄 <a href="https://github.com/rclauderf/huurcheck" target="_blank" rel="noopener" style="color:var(--rood);">Broncode van deze tool</a> — GitHub<br>
-          🤖 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener" style="color:var(--rood);">AI model (DeepSeek-V3.2)</a> — open source, MIT licentie<br>
+          🤖 <a href="https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct" target="_blank" rel="noopener" style="color:var(--rood);">AI model (Qwen3-235B)</a> — open source, Apache 2.0 licentie<br>
           🔒 <a href="https://github.com/chutes-ai" target="_blank" rel="noopener" style="color:var(--rood);">TEE platform (Chutes)</a> — open source infrastructuur<br>
           📸 <a href="https://huggingface.co/google/gemma-3-27b-it" target="_blank" rel="noopener" style="color:var(--rood);">Afbeelding model (Gemma 4)</a> — Google, open source
         </div>
@@ -779,7 +779,7 @@ Bijvoorbeeld:
       Waarom is HuurControle.nl veiliger dan ChatGPT of Grok?
       <span class="faq-chevron">▼</span>
     </div>
-    <div class="faq-antwoord">HuurControle.nl verwerkt je contract via een Trusted Execution Environment (TEE) — een beveiligde omgeving waar niemand bij kan, ook wij niet. Bij ChatGPT en Grok worden je gegevens verwerkt op servers van Amerikaanse bedrijven die in theorie toegang hebben tot je data. Bij HuurControle.nl is dit technisch onmogelijk gemaakt. Het gebruikte AI-model (DeepSeek-V3.2) is open source onder MIT licentie en publiek controleerbaar.</div>
+    <div class="faq-antwoord">HuurControle.nl verwerkt je contract via een Trusted Execution Environment (TEE) — een beveiligde omgeving waar niemand bij kan, ook wij niet. Bij ChatGPT en Grok worden je gegevens verwerkt op servers van Amerikaanse bedrijven die in theorie toegang hebben tot je data. Bij HuurControle.nl is dit technisch onmogelijk gemaakt. Het gebruikte AI-model is open source en publiek controleerbaar.</div>
   </div>
 
   <div class="faq-item">
@@ -1183,14 +1183,7 @@ Regels:
 
     let resultaat;
     try {
-      // Strip reasoning blokken, markdown fences, en zoek naar de eerste { ... }
-      let clean = tekst
-        .replace(/<think>[\s\S]*?<\/think>/gi, '')
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      const jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (jsonMatch) clean = jsonMatch[0];
+      const clean = tekst.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
       resultaat = JSON.parse(clean);
     } catch {
       toonFout('Analyse kon niet worden verwerkt. Probeer opnieuw.');
