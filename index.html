@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_71.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_72.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -854,6 +854,12 @@ function wisselTab(tab) {
   document.getElementById('tabTekst').style.color = isTekst ? 'var(--wit)' : 'var(--grijs)';
   document.getElementById('tabUpload').style.background = isTekst ? 'var(--wit)' : 'var(--donker)';
   document.getElementById('tabUpload').style.color = isTekst ? 'var(--grijs)' : 'var(--wit)';
+  // Reset UI state bij tab wissel
+  verbergFout();
+  document.getElementById('resultaten').classList.remove('active');
+  document.getElementById('loadingState').classList.remove('active');
+  document.getElementById('analyseBtn').disabled = false;
+  stopLaadAnimatie();
 }
 
 // Bestand state
