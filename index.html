@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_69.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_70.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1183,7 +1183,13 @@ Regels:
 
     let resultaat;
     try {
-      const clean = tekst.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+      let clean = tekst
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (jsonMatch) clean = jsonMatch[0];
       resultaat = JSON.parse(clean);
     } catch {
       toonFout('Analyse kon niet worden verwerkt. Probeer opnieuw.');
