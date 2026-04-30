@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_72.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_73.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1125,7 +1125,7 @@ Veelvoorkomende problemen:
 - Tijdelijk contract: een tijdelijk huurcontract van 2 jaar eindigt NIET automatisch van rechtswege — verhuurder moet minimaal 1 maand en maximaal 3 maanden voor afloop schriftelijk informeren. Doet hij dat niet, loopt het contract automatisch door als contract voor onbepaalde tijd met volledige huurbescherming (Art. 7:271a BW)
 - Eenzijdige tussentijdse opzegging alleen door verhuurder is onwettig — beide partijen moeten gelijke opzeggingsmogelijkheden hebben
 
-BELANGRIJK: Geef je antwoord UITSLUITEND als geldig JSON. Geen uitleg, geen markdown, geen tekst buiten de JSON. Begin direct met { en eindig met }.
+BELANGRIJK: Geef je antwoord UITSLUITEND als geldig JSON. Geen uitleg, geen markdown, geen tekst buiten de JSON. Begin direct met { en eindig met }. Gebruik GEEN <think> of reasoning blokken. Antwoord direct met de JSON.
 
 Gebruik dit exacte formaat:
 {"oordeel":"GOED","samenvatting":"2-3 zinnen samenvatting","bevindingen":[{"type":"PROBLEEM","titel":"Korte titel","preview":"Één zin","uitleg":"Gedetailleerde uitleg","wettekst":"Kies hier het wetsartikel dat bij DEZE bevinding hoort — bijv Art. 7:204 BW voor gebreken, Art. 7:246 BW voor huurverhoging, Art. 7:239 BW voor borgsom","wetlink":"De exacte URL naar wetten.overheid.nl voor dit specifieke artikel","advies":"Concreet advies"}]}
@@ -1338,7 +1338,7 @@ async function startVraag() {
         max_tokens: 1500,
         system: `Je bent een Nederlandse huurrecht-expert. Beantwoord de vraag van de huurder duidelijk, in gewone taal, zonder juridisch jargon. Geef praktisch advies.
 
-Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst:
+Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst. Geen <think> blokken. Begin direct met {:
 {"antwoord":"Je volledige antwoord in 2-3 alinea's, gescheiden door \\n\\n","wetsartikelen":[{"tekst":"Hier het exacte wetsartikel dat bij DEZE vraag hoort, bijv: Art. 7:204 BW — Gebreken","url":"De exacte URL naar wetten.overheid.nl voor dit specifieke artikel"}]}
 
 BELANGRIJK: Kies ALTIJD het wetsartikel dat direct relevant is voor de gestelde vraag. Enkele voorbeelden:
