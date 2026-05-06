@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_75.html -->
+<!-- saved from url=(0046)file:///C:/Users/roy-p/Downloads/index_76.html -->
 <html lang="nl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1104,7 +1104,7 @@ function bouwMessages(systeemPrompt) {
 async function startAnalyse() {
   verbergFout();
 
-  const systeemPrompt = `Je bent een Nederlandse huurrecht-expert die huurcontracten analyseert voor huurders.
+  const systeemPrompt = `Je bent een Nederlandse huurrecht-expert die huurcontracten analyseert voor huurders. Antwoord ALTIJD en UITSLUITEND in het Nederlands. Gebruik nooit woorden of tekens uit andere talen zoals Chinees, Engels of Frans.
 Je taak: analyseer de aangeleverde contracttekst grondig op problemen, oneerlijkheden, en illegale bedingen.
 Als je een afbeelding of scan ontvangt, lees je eerst de tekst en analyseer je die vervolgens.
 
@@ -1338,7 +1338,7 @@ async function startVraag() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         max_tokens: 1500,
-        system: `Je bent een Nederlandse huurrecht-expert. Beantwoord de vraag van de huurder duidelijk, in gewone taal, zonder juridisch jargon. Geef praktisch advies.
+        system: `Je bent een Nederlandse huurrecht-expert. Beantwoord de vraag van de huurder duidelijk, in gewone taal, zonder juridisch jargon. Geef praktisch advies. Antwoord ALTIJD en UITSLUITEND in het Nederlands. Gebruik nooit woorden of tekens uit andere talen zoals Chinees, Engels of Frans.
 
 Geef je antwoord UITSLUITEND als geldig JSON zonder markdown of extra tekst. Geen <think> blokken. Begin direct met {:
 {"antwoord":"Je volledige antwoord in 2-3 alinea's, gescheiden door \\n\\n","wetsartikelen":[{"tekst":"Hier het exacte wetsartikel dat bij DEZE vraag hoort, bijv: Art. 7:204 BW — Gebreken","url":"De exacte URL naar wetten.overheid.nl voor dit specifieke artikel"}]}
